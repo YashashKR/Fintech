@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { LoanApplication, LoanStatus } from '../types';
+import type { LoanApplication, LoanStatus, AuditLog } from '../types';
 import { db } from '../services/mockDb';
 import { useAuth } from './AuthContext';
 
 interface DataContextType {
     loans: LoanApplication[];
+    logs: AuditLog[];
     applyForLoan: (data: Omit<LoanApplication, 'id' | 'status' | 'submittedAt' | 'updatedAt' | 'applicantId' | 'applicantName'>) => Promise<void>;
-    updateLoanStatus: (id: string, status: LoanStatus, reason?: string) => void;
+    updateLoan: (id: string, updates: Partial<LoanApplication>, actionLog?: string) => void;
     refreshData: () => void;
 }
 
@@ -15,9 +16,13 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { user } = useAuth();
     const [loans, setLoans] = useState<LoanApplication[]>([]);
+    const [logs, setLogs] = useState<AuditLog[]>([]);
 
     const refreshData = () => {
         const allLoans = db.getLoans();
+        const allLogs = db.getLogs();
+        setLogs(allLogs);
+
         if (user?.role === 'APPLICANT') {
             setLoans(allLoans.filter(l => l.applicantId === user.id));
         } else if (user?.role === 'LOAN_OFFICER') {
@@ -49,19 +54,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         refreshData();
     };
 
-    const updateLoanStatus = (id: string, status: LoanStatus, reason?: string) => {
-        const updates: Partial<LoanApplication> = { status };
-        if (reason) updates.rejectionReason = reason; // Simplify for now
-
+    const updateLoan = (id: string, updates: Partial<LoanApplication>, actionLog?: string) => {
         db.updateLoan(id, updates);
-        if (user) {
-            db.logAction(user.id, id, `Updated loan status to ${status}`);
+        if (user && actionLog) {
+            db.logAction(user.id, id, actionLog);
         }
         refreshData();
     };
 
     return (
-        <DataContext.Provider value={{ loans, applyForLoan, updateLoanStatus, refreshData }}>
+        <DataContext.Provider value={{ loans, logs, applyForLoan, updateLoan, refreshData }}>
             {children}
         </DataContext.Provider>
     );

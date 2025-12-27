@@ -12,6 +12,8 @@ export type User = {
 export type LoanStatus =
     | 'APPLIED'
     | 'UNDER_REVIEW'
+    | 'INFO_REQUESTED'
+    | 'RISK_REVIEW'
     | 'APPROVED'
     | 'REJECTED'
     | 'ACTIVE'

@@ -5,9 +5,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import { LayoutDashboard, FileText, Settings, ShieldAlert, CreditCard, Users, ShieldCheck } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { motion } from 'framer-motion';
+import { LoanOfficerLayout } from './LoanOfficerLayout';
 
 export const DashboardLayout: React.FC = () => {
     const { user } = useAuth();
+
+    if (user?.role === 'LOAN_OFFICER') {
+        return <LoanOfficerLayout />;
+    }
 
     const getLinks = () => {
         switch (user?.role) {
