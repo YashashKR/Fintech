@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { LogOut, User as UserIcon } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 block">
@@ -25,7 +27,10 @@ export const Navbar: React.FC = () => {
                         </div>
                         <div className="h-8 w-px bg-gray-200 mx-1"></div>
                         <button
-                            onClick={logout}
+                            onClick={() => {
+                                logout();
+                                navigate('/', { replace: true });
+                            }}
                             className="p-2 text-text-muted hover:text-error hover:bg-red-50 rounded-full transition-colors"
                             title="Logout"
                         >
