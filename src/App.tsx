@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
@@ -6,6 +5,7 @@ import { Login } from './pages/Login';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { ApplicantDashboard } from './pages/applicant/Dashboard';
 import { LoanApplicationForm } from './pages/applicant/LoanApplication';
+import { ApplicantProfile } from './pages/applicant/Profile';
 
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
@@ -27,7 +27,7 @@ function App() {
               <Route path="applicant">
                 <Route path="dashboard" element={<ApplicantDashboard />} />
                 <Route path="apply" element={<LoanApplicationForm />} />
-                <Route path="profile" element={<div>Profile Page</div>} />
+                <Route path="profile" element={<ApplicantProfile />} />
               </Route>
 
               {/* Officer Routes */}
