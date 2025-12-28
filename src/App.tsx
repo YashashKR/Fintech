@@ -10,6 +10,7 @@ import { ApplicantProfile } from './pages/applicant/Profile';
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
 import { RiskDashboard } from './pages/risk/Dashboard';
+import { ScoringRules } from './pages/risk/ScoringRules';
 
 // Admin imports
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -47,7 +48,7 @@ function App() {
               {/* Risk Routes */}
               <Route path="risk">
                 <Route path="dashboard" element={<RiskDashboard />} />
-                <Route path="rules" element={<div>Scoring Rules</div>} />
+                <Route path="rules" element={<ScoringRules />} />
               </Route>
             </Route>
 

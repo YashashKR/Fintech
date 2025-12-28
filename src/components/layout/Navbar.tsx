@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
@@ -9,7 +9,7 @@ export const Navbar: React.FC = () => {
 
     return (
         <header className="bg-white shadow-sm border-b border-gray-200 z-10 block">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold shadow-sm">
                         FL

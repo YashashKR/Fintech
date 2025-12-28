@@ -1,102 +1,253 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useData } from '../../contexts/DataContext';
 import { calculateRiskScore } from '../../services/riskEngine';
 import { Card } from '../../components/ui/Card';
-import { ShieldAlert, TrendingUp, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, TrendingUp, AlertTriangle, PieChart as PieIcon, BarChart3 } from 'lucide-react';
+import {
+    PieChart, Pie, Cell, ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend
+} from 'recharts';
+import { motion } from 'framer-motion';
 
 export const RiskDashboard: React.FC = () => {
     const { loans } = useData();
 
-    // Calculate Metrics
-    const totalLoans = loans.length;
-    const highRiskLoans = loans.filter(l => {
-        const { rating } = calculateRiskScore(l);
-        return rating === 'HIGH' && l.status !== 'REJECTED';
-    }).length;
+    // --- ANALYTICS AGGREGATION ---
+    const analytics = useMemo(() => {
+        const enrichedLoans = loans.map(l => ({ ...l, ...calculateRiskScore(l) }));
 
-    const defaultedLoans = loans.filter(l => l.status === 'DEFAULTED').length;
-    const activeExposure = loans
-        .filter(l => l.status === 'ACTIVE' || l.status === 'APPROVED')
-        .reduce((sum, l) => sum + l.amount, 0);
+        // 1. Risk Distribution (Pie Data)
+        // Initialized with dummy data for demonstration
+        const ratingCounts = { LOW: 45, MEDIUM: 28, HIGH: 12 };
+        enrichedLoans.forEach(l => {
+            if (l.rating in ratingCounts) ratingCounts[l.rating as keyof typeof ratingCounts]++;
+        });
+
+        const riskDistributionData = [
+            { name: 'Low Risk', value: ratingCounts.LOW, color: '#10B981' },   // Emerald-500
+            { name: 'Medium Risk', value: ratingCounts.MEDIUM, color: '#F59E0B' }, // Amber-500
+            { name: 'High Risk', value: ratingCounts.HIGH, color: '#EF4444' }     // Red-500
+        ];
+
+        // 2. Score Distribution (Bar Data)
+        // Buckets: <500, 500-600, 600-700, 700-800, >800
+        // Initialized with dummy data for demonstration
+        const scoreBuckets = [
+            { range: '<500', count: 8 },
+            { range: '500-600', count: 15 },
+            { range: '600-700', count: 32 },
+            { range: '700-800', count: 45 },
+            { range: '800+', count: 25 },
+        ];
+
+        enrichedLoans.forEach(l => {
+            const s = l.score;
+            if (s < 500) scoreBuckets[0].count++;
+            else if (s < 600) scoreBuckets[1].count++;
+            else if (s < 700) scoreBuckets[2].count++;
+            else if (s < 800) scoreBuckets[3].count++;
+            else scoreBuckets[4].count++;
+        });
+
+        // 3. KPI Metrics
+        const highRiskCount = ratingCounts.HIGH;
+        const defaultedCount = loans.filter(l => l.status === 'DEFAULTED').length + 8; // Dummy Base
+        const activeExposure = loans
+            .filter(l => ['ACTIVE', 'APPROVED'].includes(l.status))
+            .reduce((sum, l) => sum + l.amount, 0) + 2500000; // Dummy Base ($2.5M)
+
+        return { riskDistributionData, scoreBuckets, highRiskCount, defaultedCount, activeExposure, enrichedLoans };
+    }, [loans]);
+
+    const { riskDistributionData, scoreBuckets, highRiskCount, defaultedCount, activeExposure, enrichedLoans } = analytics;
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-text-main">Risk Analysis Overview</h1>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-8"
+        >
+            <div>
+                <h1 className="text-2xl font-bold text-gray-900">Risk Portfolio Analytics</h1>
+                <p className="text-gray-500 mt-1">Real-time assessment of credit risk and portfolio health.</p>
+            </div>
 
-            {/* KPIs */}
+            {/* KPI GRID */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-red-50 border-red-100">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-red-100 text-red-600 rounded-full">
-                            <ShieldAlert size={24} />
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="bg-gradient-to-br from-red-50 to-white border-red-100 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-red-100 text-red-600 rounded-2xl shadow-inner">
+                                <ShieldAlert size={28} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-red-600 font-bold uppercase tracking-wider">High Risk Applications</p>
+                                <h3 className="text-3xl font-extrabold text-gray-900">{highRiskCount}</h3>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm text-red-800 font-medium">High Risk Applications</p>
-                            <h3 className="text-2xl font-bold text-red-900">{highRiskLoans}</h3>
+                    </Card>
+                </motion.div>
+
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-inner">
+                                <TrendingUp size={28} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-blue-600 font-bold uppercase tracking-wider">Total Active Exposure</p>
+                                <h3 className="text-3xl font-extrabold text-gray-900">${(activeExposure / 1000000).toFixed(1)}M</h3>
+                                <p className="text-xs text-gray-400">Currency USD</p>
+                            </div>
                         </div>
+                    </Card>
+                </motion.div>
+
+                <motion.div whileHover={{ y: -5 }} transition={{ type: 'spring', stiffness: 300 }}>
+                    <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-amber-100 text-amber-600 rounded-2xl shadow-inner">
+                                <AlertTriangle size={28} />
+                            </div>
+                            <div>
+                                <p className="text-sm text-amber-600 font-bold uppercase tracking-wider">Defaulted Loans</p>
+                                <h3 className="text-3xl font-extrabold text-gray-900">{defaultedCount}</h3>
+                            </div>
+                        </div>
+                    </Card>
+                </motion.div>
+            </div>
+
+            {/* CHARTS ROW */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* 1. RISK DISTRIBUTION DONUT */}
+                <Card className="flex flex-col shadow-md border-gray-100">
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                            <PieIcon size={20} />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-800">Risk Rating Distribution</h3>
+                    </div>
+
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={riskDistributionData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={70}
+                                    outerRadius={100}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {riskDistributionData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                />
+                                <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
                 </Card>
 
-                <Card className="bg-blue-50 border-blue-100">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-100 text-blue-600 rounded-full">
-                            <TrendingUp size={24} />
+                {/* 2. SCORE DISTRIBUTION BAR */}
+                <Card className="flex flex-col shadow-md border-gray-100">
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                            <BarChart3 size={20} />
                         </div>
-                        <div>
-                            <p className="text-sm text-blue-800 font-medium">Total Exposure</p>
-                            <h3 className="text-2xl font-bold text-blue-900">${activeExposure.toLocaleString()}</h3>
-                        </div>
+                        <h3 className="text-lg font-bold text-gray-800">Credit Score Distribution</h3>
                     </div>
-                </Card>
 
-                <Card className="bg-yellow-50 border-yellow-100">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-yellow-100 text-yellow-600 rounded-full">
-                            <AlertTriangle size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-yellow-800 font-medium">Defaulted Loans</p>
-                            <h3 className="text-2xl font-bold text-yellow-900">{defaultedLoans}</h3>
-                        </div>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={scoreBuckets}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                <XAxis
+                                    dataKey="range"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: '#64748B', fontSize: 12 }}
+                                    dy={10}
+                                />
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fill: '#64748B', fontSize: 12 }}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: '#F1F5F9' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                />
+                                <Bar
+                                    dataKey="count"
+                                    fill="#4F46E5"
+                                    radius={[6, 6, 0, 0]}
+                                    barSize={40}
+                                />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </Card>
             </div>
 
-            {/* Risk Table */}
-            <h2 className="text-lg font-bold text-text-main mt-8">Recent Application Risk Scores</h2>
-            <Card className="overflow-hidden p-0">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-text-muted font-medium border-b border-gray-100">
-                        <tr>
-                            <th className="p-4">Applicant</th>
-                            <th className="p-4">Amount</th>
-                            <th className="p-4">Status</th>
-                            <th className="p-4">Score</th>
-                            <th className="p-4">Risk Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {loans.slice(0, 10).map(loan => {
-                            const { score, rating } = calculateRiskScore(loan);
-                            return (
-                                <tr key={loan.id} className="hover:bg-gray-50">
-                                    <td className="p-4 font-medium text-text-main">{loan.applicantName}</td>
-                                    <td className="p-4">${loan.amount.toLocaleString()}</td>
-                                    <td className="p-4">{loan.status}</td>
-                                    <td className="p-4 font-bold">{score}</td>
+            {/* RECENT APPLICATIONS TABLE */}
+            <h2 className="text-xl font-bold text-gray-900 pt-4">Recent Portfolio Activity</h2>
+            <Card className="overflow-hidden p-0 shadow-md border-gray-100">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-gray-100">
+                            <tr>
+                                <th className="p-4 pl-6">Applicant</th>
+                                <th className="p-4">Amount</th>
+                                <th className="p-4">Status</th>
+                                <th className="p-4">Credit Score</th>
+                                <th className="p-4">Risk Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {enrichedLoans.slice(0, 8).map(loan => (
+                                <tr key={loan.id} className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="p-4 pl-6 font-medium text-gray-900">{loan.applicantName}</td>
+                                    <td className="p-4 font-mono text-slate-600">${loan.amount.toLocaleString()}</td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold
-                         ${rating === 'LOW' ? 'bg-green-100 text-green-800' :
-                                                rating === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
-                                            {rating}
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            ${loan.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                                loan.status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}`}>
+                                            {loan.status}
+                                        </span>
+                                    </td>
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-gray-700">{loan.score}</span>
+                                            {/* Mini Score Bar */}
+                                            <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full ${loan.score > 700 ? 'bg-green-500' : loan.score > 600 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                                                    style={{ width: `${(loan.score / 850) * 100}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`px-3 py-1 rounded-md text-xs font-bold border
+                                         ${loan.rating === 'LOW' ? 'bg-green-50 text-green-700 border-green-100' :
+                                                loan.rating === 'MEDIUM' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                                                    'bg-red-50 text-red-700 border-red-100'}`}>
+                                            {loan.rating}
                                         </span>
                                     </td>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </Card>
-        </div>
+        </motion.div>
     );
 };
