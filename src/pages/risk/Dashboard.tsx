@@ -5,7 +5,7 @@ import { Card } from '../../components/ui/Card';
 import { ShieldAlert, TrendingUp, AlertTriangle, PieChart as PieIcon, BarChart3 } from 'lucide-react';
 import {
     PieChart, Pie, Cell, ResponsiveContainer,
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from 'recharts';
 import { motion } from 'framer-motion';
 
@@ -14,7 +14,18 @@ export const RiskDashboard: React.FC = () => {
 
     // --- ANALYTICS AGGREGATION ---
     const analytics = useMemo(() => {
-        const enrichedLoans = loans.map(l => ({ ...l, ...calculateRiskScore(l) }));
+        const realLoans = loans.map(l => ({ ...l, ...calculateRiskScore(l) }));
+
+        const DUMMY_LOANS = [
+            { id: 'dm-1', applicantName: 'Nexus Tech Ltd', amount: 125000, status: 'APPROVED', score: 845, rating: 'LOW' },
+            { id: 'dm-2', applicantName: 'Sarah Connor', amount: 15000, status: 'PENDING', score: 680, rating: 'MEDIUM' },
+            { id: 'dm-3', applicantName: 'Apex Logistics', amount: 350000, status: 'APPROVED', score: 790, rating: 'LOW' },
+            { id: 'dm-4', applicantName: 'John Doe Enterprise', amount: 45000, status: 'REJECTED', score: 520, rating: 'HIGH' },
+            { id: 'dm-5', applicantName: 'GreenLeaf Organic', amount: 28000, status: 'APPROVED', score: 715, rating: 'LOW' },
+            { id: 'dm-6', applicantName: 'Marcus Wright', amount: 8500, status: 'DEFAULTED', score: 590, rating: 'HIGH' },
+        ];
+
+        const enrichedLoans = [...DUMMY_LOANS, ...realLoans] as typeof realLoans;
 
         // 1. Risk Distribution (Pie Data)
         // Initialized with dummy data for demonstration
@@ -25,8 +36,8 @@ export const RiskDashboard: React.FC = () => {
 
         const riskDistributionData = [
             { name: 'Low Risk', value: ratingCounts.LOW, color: '#10B981' },   // Emerald-500
-            { name: 'Medium Risk', value: ratingCounts.MEDIUM, color: '#F59E0B' }, // Amber-500
-            { name: 'High Risk', value: ratingCounts.HIGH, color: '#EF4444' }     // Red-500
+            { name: 'Medium Risk', value: ratingCounts.MEDIUM, color: '#2ea5c0ff' }, // Amber-500
+            { name: 'High Risk', value: ratingCounts.HIGH, color: '#eb0000ff' }     // Red-500
         ];
 
         // 2. Score Distribution (Bar Data)
@@ -60,6 +71,22 @@ export const RiskDashboard: React.FC = () => {
     }, [loans]);
 
     const { riskDistributionData, scoreBuckets, highRiskCount, defaultedCount, activeExposure, enrichedLoans } = analytics;
+
+    const CustomTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-[#1E3A8A] text-white p-4 rounded-xl shadow-xl border border-blue-800">
+                    <p className="text-xs text-blue-200 mb-1">Score Range</p>
+                    <p className="font-bold text-lg mb-2">{label}</p>
+                    <div className="flex items-end gap-2">
+                        <span className="text-3xl font-bold">{payload[0].value}</span>
+                        <span className="text-xs text-blue-200 mb-1">applications</span>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
         <motion.div
@@ -155,18 +182,31 @@ export const RiskDashboard: React.FC = () => {
                     </div>
                 </Card>
 
-                {/* 2. SCORE DISTRIBUTION BAR */}
+                {/* 2. SCORE DISTRIBUTION AREA CHART */}
                 <Card className="flex flex-col shadow-md border-gray-100">
-                    <div className="flex items-center gap-2 mb-6">
-                        <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                            <BarChart3 size={20} />
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                                <BarChart3 size={20} />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800">Credit Score Distribution</h3>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-800">Credit Score Distribution</h3>
+                        <div className="flex bg-gray-100 p-1 rounded-lg">
+                            <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 rounded-md">Week</button>
+                            <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 rounded-md">Month</button>
+                            <button className="px-3 py-1 text-xs font-bold text-white bg-indigo-600 rounded-md shadow-sm">Year</button>
+                        </div>
                     </div>
 
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={scoreBuckets}>
+                            <AreaChart data={scoreBuckets}>
+                                <defs>
+                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                                 <XAxis
                                     dataKey="range"
@@ -180,17 +220,16 @@ export const RiskDashboard: React.FC = () => {
                                     tickLine={false}
                                     tick={{ fill: '#64748B', fontSize: 12 }}
                                 />
-                                <Tooltip
-                                    cursor={{ fill: '#F1F5F9' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                                />
-                                <Bar
+                                <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#4F46E5', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                                <Area
+                                    type="monotone"
                                     dataKey="count"
-                                    fill="#4F46E5"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={40}
+                                    stroke="#4F46E5"
+                                    strokeWidth={3}
+                                    fillOpacity={1}
+                                    fill="url(#colorCount)"
                                 />
-                            </BarChart>
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </Card>
