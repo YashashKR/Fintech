@@ -10,7 +10,14 @@ import { ApplicantProfile } from './pages/applicant/Profile';
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
 import { RiskDashboard } from './pages/risk/Dashboard';
-import { AdminDashboard } from './pages/admin/Dashboard';
+
+// Admin imports
+import { AdminLayout } from './components/admin/AdminLayout';
+import { Overview } from './pages/admin/Overview';
+import { UserManagement } from './pages/admin/UserManagement';
+import { LoanOverrides } from './pages/admin/LoanOverrides';
+import { SystemAnalytics } from './pages/admin/SystemAnalytics';
+import { AuditLogs } from './pages/admin/AuditLogs';
 
 function App() {
   return (
@@ -42,14 +49,31 @@ function App() {
                 <Route path="dashboard" element={<RiskDashboard />} />
                 <Route path="rules" element={<div>Scoring Rules</div>} />
               </Route>
-
-              {/* Admin Routes */}
-              <Route path="admin">
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="users" element={<AdminDashboard />} />
-                <Route path="loans" element={<div>All Loans</div>} />
-              </Route>
             </Route>
+
+            {/* Admin Routes - Separate Layout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="/admin/overview" replace />} />
+              <Route path="dashboard" element={<Navigate to="/admin/overview" replace />} />
+              <Route path="overview" element={<Overview />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="overrides" element={<LoanOverrides />} />
+              <Route path="analytics" element={<SystemAnalytics />} />
+              <Route path="audit-logs" element={<AuditLogs />} />
+            </Route>
+
+            {/* Catch-all route */}
+            <Route path="*" element={
+              <div className="flex items-center justify-center h-screen bg-slate-900 text-white">
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+                  <p className="mb-6 text-slate-400">The page you are looking for doesn't exist.</p>
+                  <a href="/" className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    Go Home
+                  </a>
+                </div>
+              </div>
+            } />
           </Routes>
         </BrowserRouter>
       </DataProvider>

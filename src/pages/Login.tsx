@@ -27,7 +27,7 @@ export const Login: React.FC = () => {
                     navigate('/risk/dashboard');
                     break;
                 case 'ADMIN':
-                    navigate('/admin/dashboard');
+                    navigate('/admin/overview');
                     break;
                 default:
                     navigate('/');
@@ -48,28 +48,43 @@ export const Login: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
                 <Card title="Select a Role to Simulate" className="md:col-span-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {availableUsers.map((user) => (
-                            <div
-                                key={user.id}
-                                className="p-4 border border-gray-200 rounded-lg hover:border-primary/50 hover:bg-blue-50/50 transition-all cursor-pointer flex items-center justify-between group"
-                                onClick={() => handleLogin(user.id, user.role)}
-                            >
-                                <div>
-                                    <h3 className="font-medium text-text-main group-hover:text-primary transition-colors">{user.name}</h3>
-                                    <span className="text-xs bg-gray-100 text-text-muted px-2 py-1 rounded mt-1 inline-block uppercase tracking-wider">
-                                        {user.role.replace('_', ' ')}
-                                    </span>
-                                </div>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="group-hover:bg-primary group-hover:text-white group-hover:border-primary"
-                                    isLoading={loading === user.id}
+                        {availableUsers.length > 0 ? (
+                            availableUsers.map((user) => (
+                                <div
+                                    key={user.id}
+                                    className="p-4 border border-gray-200 rounded-lg hover:border-primary/50 hover:bg-blue-50/50 transition-all cursor-pointer flex items-center justify-between group"
+                                    onClick={() => handleLogin(user.id, user.role)}
                                 >
-                                    Select
+                                    <div>
+                                        <h3 className="font-medium text-text-main group-hover:text-primary transition-colors">{user.name}</h3>
+                                        <span className="text-xs bg-gray-100 text-text-muted px-2 py-1 rounded mt-1 inline-block uppercase tracking-wider">
+                                            {user.role.replace('_', ' ')}
+                                        </span>
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+                                        isLoading={loading === user.id}
+                                    >
+                                        Select
+                                    </Button>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center py-8">
+                                <p className="text-text-muted mb-4">No users found in the simulation database.</p>
+                                <Button
+                                    onClick={() => {
+                                        localStorage.clear();
+                                        window.location.reload();
+                                    }}
+                                    variant="outline"
+                                >
+                                    Reset Database
                                 </Button>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </Card>
 

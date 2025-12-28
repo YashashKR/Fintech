@@ -34,9 +34,9 @@ export const DashboardLayout: React.FC = () => {
                 ];
             case 'ADMIN':
                 return [
-                    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Overview' },
+                    { to: '/admin/overview', icon: LayoutDashboard, label: 'Overview' },
                     { to: '/admin/users', icon: Users, label: 'Users' },
-                    { to: '/admin/loans', icon: CreditCard, label: 'All Loans' },
+                    { to: '/admin/overrides', icon: CreditCard, label: 'Overrides' },
                 ];
             default:
                 return [];
