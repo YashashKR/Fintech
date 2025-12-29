@@ -12,6 +12,8 @@ import FinancialTips from './pages/applicant/Tips';
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
 import { ApplicationsPage } from './pages/officer/ApplicationsPage';
+import { OfficerProfile } from './pages/officer/OfficerProfile';
+import { OfficerSettings } from './pages/officer/OfficerSettings';
 import { ScoringRules } from './pages/risk/ScoringRules';
 import { RiskDashboard } from './pages/risk/Dashboard';
 import { RiskProfile } from './pages/risk/Profile';
@@ -49,6 +51,8 @@ function App() {
                 <Route path="dashboard" element={<OfficerDashboard />} />
                 <Route path="applications" element={<ApplicationsPage />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
+                <Route path="profile" element={<OfficerProfile />} />
+                <Route path="settings" element={<OfficerSettings />} />
               </Route>
 
               {/* Risk Routes */}

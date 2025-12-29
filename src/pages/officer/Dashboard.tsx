@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { Search } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
@@ -9,6 +10,7 @@ import { AuditTrailPanel } from '../../components/officer/AuditTrailPanel';
 
 export const OfficerDashboard: React.FC = () => {
     const { loans } = useData();
+    const { user } = useAuth();
     const [selectedLoanId, setSelectedLoanId] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
@@ -32,7 +34,7 @@ export const OfficerDashboard: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Loan Officer Dashboard</h1>
-                        <p className="text-gray-500">Welcome back, Sarah</p>
+                        <p className="text-gray-500">Welcome back, {user?.name ?? 'there'}</p>
                     </div>
                     <div className="relative w-full sm:w-96">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
