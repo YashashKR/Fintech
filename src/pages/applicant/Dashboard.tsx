@@ -17,7 +17,6 @@ import {
 import { motion } from 'framer-motion';
 import { FadeInSection } from '../../components/ui/animations/FadeInSection';
 import { SpotlightCard } from '../../components/ui/animations/SpotlightCard';
-import { ShinyButton } from '../../components/ui/animations/ShinyButton';
 import { Aurora } from '../../components/ui/animations/Aurora';
 import { cn } from '../../utils/cn';
 
@@ -65,7 +64,7 @@ export const ApplicantDashboard: React.FC = () => {
                         </span>
                         <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl text-slate-900">
                             Welcome back, <br />
-                            <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-blue-600">
                                 {user?.name || 'Guest'}
                             </span>
                         </h1>
@@ -177,7 +176,9 @@ export const ApplicantDashboard: React.FC = () => {
                                 You haven&apos;t applied for any loans yet. Our smart vetting system can get you approved in minutes.
                             </p>
                             <Link to="/applicant/apply">
-                                <ShinyButton>Start Application</ShinyButton>
+                                <button className="rounded-xl bg-blue-600 px-8 py-3 font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
+                                    Start Application
+                                </button>
                             </Link>
                         </SpotlightCard>
                     ) : (
