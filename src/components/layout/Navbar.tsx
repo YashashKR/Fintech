@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
                     <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold shadow-sm">
                         FL
                     </div>
-                    <span className="text-xl font-bold text-primary tracking-tight">FinTech Lite</span>
+                    <span className="text-xl font-bold text-primary tracking-tight">FinTech</span>
                 </div>
 
                 {user && (
