@@ -1,4 +1,4 @@
-import type { User, LoanApplication, AuditLog, RepaymentSchedule } from '../types';
+import type { User, LoanApplication, AuditLog, RepaymentSchedule, Role } from '../types';
 
 const STORAGE_KEYS = {
     USERS: 'fintech_sim_users',
@@ -24,6 +24,21 @@ class MockDatabaseService {
 
     getUserById(id: string): User | undefined {
         return this.getUsers().find(u => u.id === id);
+    }
+
+    getUserByCredentials(name: string, role: Role, password: string): User | undefined {
+        return this.getUsers().find(
+            u => u.name.toLowerCase() === name.toLowerCase() &&
+                u.role === role &&
+                u.password === password
+        );
+    }
+
+    createUser(user: User): void {
+        const users = this.getUsers();
+        users.push(user);
+        this.set(STORAGE_KEYS.USERS, users);
+        this.logAction('SYSTEM', user.id, `New user registered: ${user.name}`);
     }
 
     // --- Loans ---
@@ -76,10 +91,10 @@ class MockDatabaseService {
     seedInitialData() {
         if (this.getUsers().length === 0) {
             const mockUsers: User[] = [
-                { id: 'user_applicant', name: 'John Doe', email: 'john@example.com', role: 'APPLICANT', createdAt: new Date().toISOString() },
-                { id: 'user_officer', name: 'Sarah Loan', email: 'sarah@bank.com', role: 'LOAN_OFFICER', createdAt: new Date().toISOString() },
-                { id: 'user_risk', name: 'Mike Risk', email: 'mike@bank.com', role: 'RISK_ANALYST', createdAt: new Date().toISOString() },
-                { id: 'user_admin', name: 'Admin Alice', email: 'admin@bank.com', role: 'ADMIN', createdAt: new Date().toISOString() },
+                { id: 'user_applicant', name: 'John Doe', email: 'john@example.com', password: 'password123', role: 'APPLICANT', createdAt: new Date().toISOString() },
+                { id: 'user_officer', name: 'Sarah Loan', email: 'sarah@bank.com', password: 'password123', role: 'LOAN_OFFICER', createdAt: new Date().toISOString() },
+                { id: 'user_risk', name: 'Mike Risk', email: 'mike@bank.com', password: 'password123', role: 'RISK_ANALYST', createdAt: new Date().toISOString() },
+                { id: 'user_admin', name: 'Admin Alice', email: 'admin@bank.com', password: 'password123', role: 'ADMIN', createdAt: new Date().toISOString() },
             ];
             this.set(STORAGE_KEYS.USERS, mockUsers);
             console.log('Database Seeded with Mock Users');
