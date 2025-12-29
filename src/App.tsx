@@ -11,8 +11,9 @@ import FinancialTips from './pages/applicant/Tips';
 
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
-import { RiskDashboard } from './pages/risk/Dashboard';
+import { ApplicationsPage } from './pages/officer/ApplicationsPage';
 import { ScoringRules } from './pages/risk/ScoringRules';
+import { RiskDashboard } from './pages/risk/Dashboard';
 
 // Admin imports
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -45,7 +46,7 @@ function App() {
               {/* Officer Routes */}
               <Route path="officer">
                 <Route path="dashboard" element={<OfficerDashboard />} />
-                <Route path="applications" element={<OfficerDashboard />} />
+                <Route path="applications" element={<ApplicationsPage />} />
                 <Route path="applications/:id" element={<ApplicationDetail />} />
               </Route>
 
