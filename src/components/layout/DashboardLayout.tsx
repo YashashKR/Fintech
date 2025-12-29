@@ -22,6 +22,8 @@ export const DashboardLayout: React.FC = () => {
                 return [
                     { to: '/applicant/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
                     { to: '/applicant/apply', icon: FileText, label: 'Apply for Loan' },
+                    { to: '/applicant/progress', icon: CreditCard, label: 'Track Progress' },
+                    { to: '/applicant/tips', icon: ShieldCheck, label: 'Financial Tips' },
                     { to: '/applicant/profile', icon: Settings, label: 'Profile' },
                 ];
             case 'LOAN_OFFICER':
@@ -149,41 +151,6 @@ export const DashboardLayout: React.FC = () => {
                             ))}
                         </div>
 
-                        {/* Premium Card (Completely hidden when collapsed) */}
-                        <AnimatePresence>
-                            {isHovered && (
-                                <motion.div
-                                    className="mt-4 pt-4 border-t border-slate-100 overflow-hidden"
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    <motion.div
-                                        className="rounded-3xl bg-slate-900 p-4 shadow-xl relative overflow-hidden cursor-pointer group"
-                                        whileHover={{ y: -4 }}
-                                    >
-                                        <div className="absolute -top-8 -right-8 h-24 w-24 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors" />
-
-                                        <motion.div
-                                            animate={{ y: [0, -4, 0] }}
-                                            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                                        >
-                                            <ShieldCheck className="text-emerald-400 mb-2" size={24} />
-                                        </motion.div>
-
-                                        <p className="text-white font-bold text-xs mb-1">Premium Support</p>
-                                        <p className="text-slate-400 text-[10px] mb-3 leading-relaxed">
-                                            Get 24/7 dedicated assistance.
-                                        </p>
-
-                                        <button className="w-full bg-primary py-2 rounded-lg text-xs font-bold text-white hover:bg-primary/90 transition-colors">
-                                            Upgrade Now
-                                        </button>
-                                    </motion.div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </nav>
                 </motion.aside>
 

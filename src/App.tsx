@@ -6,6 +6,8 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { ApplicantDashboard } from './pages/applicant/Dashboard';
 import { LoanApplicationForm } from './pages/applicant/LoanApplication';
 import { ApplicantProfile } from './pages/applicant/Profile';
+import ProgressTracker from './pages/applicant/Progress';
+import FinancialTips from './pages/applicant/Tips';
 
 import { OfficerDashboard } from './pages/officer/Dashboard';
 import { ApplicationDetail } from './pages/officer/ApplicationDetail';
@@ -36,6 +38,8 @@ function App() {
                 <Route path="dashboard" element={<ApplicantDashboard />} />
                 <Route path="apply" element={<LoanApplicationForm />} />
                 <Route path="profile" element={<ApplicantProfile />} />
+                <Route path="progress" element={<ProgressTracker />} />
+                <Route path="tips" element={<FinancialTips />} />
               </Route>
 
               {/* Officer Routes */}

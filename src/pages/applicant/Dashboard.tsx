@@ -17,14 +17,14 @@ import {
 import { motion } from 'framer-motion';
 import { FadeInSection } from '../../components/ui/animations/FadeInSection';
 import { SpotlightCard } from '../../components/ui/animations/SpotlightCard';
-import { Particles } from '../../components/ui/animations/Particles';
 import { ShinyButton } from '../../components/ui/animations/ShinyButton';
+import { Aurora } from '../../components/ui/animations/Aurora';
 import { cn } from '../../utils/cn';
 
 /**
  * Dashboard.tsx
  * 
- * Enhanced Applicant Dashboard with modern Fintech 2025 aesthetics.
+ * Enhanced Applicant Dashboard with modern Fintech 2025 aesthetics (Light Theme Hero).
  */
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -54,63 +54,48 @@ export const ApplicantDashboard: React.FC = () => {
 
     return (
         <div className="space-y-10 pb-12">
-            {/* HERO SECTION */}
-            <section className="relative overflow-hidden rounded-[2rem] bg-slate-900 px-8 py-12 text-white shadow-2xl">
-                <Particles density={40} color="rgba(96, 165, 250, 0.4)" className="opacity-60" />
-
-                {/* Animated Beam Effect */}
-                <motion.div
-                    animate={{
-                        opacity: [0, 0.3, 0],
-                        scale: [0.8, 1.2, 0.8],
-                        rotate: [0, 45, 0],
-                    }}
-                    transition={{
-                        duration: 10,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    className="absolute -top-1/2 -right-1/4 h-full w-full bg-primary/20 blur-[120px] rounded-full"
-                />
+            {/* HERO SECTION - LIGHT THEME */}
+            <section className="relative overflow-hidden rounded-[2rem] bg-white px-8 py-12 text-slate-900 shadow-xl ring-1 ring-slate-200">
+                <Aurora colorStops={["#e0f2fe", "#d1fae5", "#bfdbfe"]} />
 
                 <div className="relative z-10 max-w-2xl">
                     <FadeInSection direction="left">
-                        <span className="mb-2 inline-block rounded-full bg-primary/20 px-4 py-1.5 text-xs font-semibold tracking-wider text-primary-light uppercase">
+                        <span className="mb-2 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold tracking-wider text-primary uppercase">
                             Applicant Dashboard
                         </span>
-                        <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl">
+                        <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl text-slate-900">
                             Welcome back, <br />
-                            <span className="bg-gradient-to-r from-primary-light to-emerald-400 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                                 {user?.name || 'Guest'}
                             </span>
                         </h1>
-                        <p className="text-lg text-slate-300 opacity-90">
+                        <p className="text-lg text-slate-600 font-medium opacity-90">
                             Your financial journey is moving fast. Manage your applications and track your progress in real-time.
                         </p>
                     </FadeInSection>
                 </div>
 
-                {/* Floating summary nodes */}
+                {/* Floating summary nodes - Light Version */}
                 <div className="absolute top-1/2 right-12 hidden -translate-y-1/2 space-y-4 lg:block">
                     <FadeInSection delay={0.2} direction="right">
-                        <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-4 backdrop-blur-md border border-white/10">
-                            <div className="rounded-xl bg-primary/20 p-2">
-                                <ShieldCheck className="text-primary-light" size={24} />
+                        <div className="flex items-center gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-md border border-slate-200 shadow-sm">
+                            <div className="rounded-xl bg-primary/10 p-2">
+                                <ShieldCheck className="text-primary" size={24} />
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Total Credits</p>
-                                <p className="text-lg font-bold text-white">$0.00</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">Total Credits</p>
+                                <p className="text-lg font-bold text-slate-900">$0.00</p>
                             </div>
                         </div>
                     </FadeInSection>
                     <FadeInSection delay={0.3} direction="right">
-                        <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-4 backdrop-blur-md border border-white/10">
-                            <div className="rounded-xl bg-emerald-500/20 p-2">
-                                <TrendingUp className="text-emerald-400" size={24} />
+                        <div className="flex items-center gap-4 rounded-2xl bg-white/60 p-4 backdrop-blur-md border border-slate-200 shadow-sm">
+                            <div className="rounded-xl bg-emerald-100 p-2">
+                                <TrendingUp className="text-emerald-600" size={24} />
                             </div>
                             <div>
-                                <p className="text-xs text-slate-400">Active Applications</p>
-                                <p className="text-lg font-bold text-white">{loans.length}</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-tight">Active Applications</p>
+                                <p className="text-lg font-bold text-slate-900">{loans.length}</p>
                             </div>
                         </div>
                     </FadeInSection>
@@ -137,31 +122,35 @@ export const ApplicantDashboard: React.FC = () => {
                             </SpotlightCard>
                         </Link>
 
-                        <div className="group cursor-not-allowed opacity-80">
-                            <SpotlightCard className="h-full bg-slate-50 border-slate-200 shadow-sm" spotlightColor="rgba(30, 41, 59, 0.05)">
-                                <div className="mb-4 rounded-2xl bg-slate-200 p-3 text-slate-500">
+                        <Link to="/applicant/progress" className="group">
+                            <SpotlightCard className="h-full border-slate-200 bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:ring-blue-500/50" spotlightColor="rgba(59, 130, 246, 0.08)">
+                                <div className="mb-4 rounded-2xl bg-blue-50 p-3 text-blue-600 transition-transform group-hover:scale-110 group-hover:rotate-3">
                                     <PieChart size={32} />
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xl font-bold text-slate-900">Track Progress</h3>
-                                    <span className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-500">COMING SOON</span>
                                 </div>
                                 <p className="mt-1 text-sm text-slate-500 font-normal">Real-time milestones for your ongoing applications.</p>
+                                <div className="mt-6 flex items-center text-sm font-bold text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">
+                                    View Status <ArrowRight size={16} className="ml-1" />
+                                </div>
                             </SpotlightCard>
-                        </div>
+                        </Link>
 
-                        <div className="group cursor-not-allowed opacity-80">
-                            <SpotlightCard className="h-full bg-slate-50 border-slate-200 shadow-sm" spotlightColor="rgba(30, 41, 59, 0.05)">
-                                <div className="mb-4 rounded-2xl bg-emerald-100/50 p-3 text-emerald-600">
+                        <Link to="/applicant/tips" className="group">
+                            <SpotlightCard className="h-full border-slate-200 bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:ring-emerald-500/50" spotlightColor="rgba(16, 185, 129, 0.08)">
+                                <div className="mb-4 rounded-2xl bg-emerald-50 p-3 text-emerald-600 transition-transform group-hover:scale-110 group-hover:rotate-3">
                                     <Lightbulb size={32} />
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xl font-bold text-slate-900">Financial Tips</h3>
-                                    <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-600">COMING SOON</span>
                                 </div>
                                 <p className="mt-1 text-sm text-slate-500 font-normal">Personalized insights to boost your credit health.</p>
+                                <div className="mt-6 flex items-center text-sm font-bold text-emerald-600 opacity-0 transition-opacity group-hover:opacity-100">
+                                    Explore Tips <ArrowRight size={16} className="ml-1" />
+                                </div>
                             </SpotlightCard>
-                        </div>
+                        </Link>
                     </div>
                 </FadeInSection>
             </section>
