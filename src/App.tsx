@@ -14,6 +14,7 @@ import { ApplicationDetail } from './pages/officer/ApplicationDetail';
 import { ApplicationsPage } from './pages/officer/ApplicationsPage';
 import { ScoringRules } from './pages/risk/ScoringRules';
 import { RiskDashboard } from './pages/risk/Dashboard';
+import { RiskProfile } from './pages/risk/Profile';
 
 // Admin imports
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -54,6 +55,7 @@ function App() {
               <Route path="risk">
                 <Route path="dashboard" element={<RiskDashboard />} />
                 <Route path="rules" element={<ScoringRules />} />
+                <Route path="profile" element={<RiskProfile />} />
               </Route>
             </Route>
 

@@ -35,6 +35,7 @@ export const DashboardLayout: React.FC = () => {
                 return [
                     { to: '/risk/dashboard', icon: ShieldAlert, label: 'Risk Analysis' },
                     { to: '/risk/rules', icon: Settings, label: 'Scoring Rules' },
+                    { to: '/risk/profile', icon: Users, label: 'Profile' },
                 ];
             case 'ADMIN':
                 return [
